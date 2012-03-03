@@ -7,9 +7,10 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
-public class JokeListAdapter extends BaseAdapter  {
+public class JokeListAdapter extends BaseAdapter {
 
 	/**
 	 * The application Context in which this JokeListAdapter is being used.
@@ -40,9 +41,9 @@ public class JokeListAdapter extends BaseAdapter  {
 	 *            is bound.
 	 */
 	public JokeListAdapter(Context context, List<Joke> jokeList) {
-		m_context=context;
-		m_jokeList=jokeList;
-		m_nSelectedPosition=Adapter.NO_SELECTION;
+		m_context = context;
+		m_jokeList = jokeList;
+		m_nSelectedPosition = Adapter.NO_SELECTION;
 	}
 
 	/**
@@ -70,5 +71,11 @@ public class JokeListAdapter extends BaseAdapter  {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
 		return new JokeView(m_context, m_jokeList.get(position));
+	}
+
+	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		m_nSelectedPosition = arg2;
+		return false;
 	}
 }

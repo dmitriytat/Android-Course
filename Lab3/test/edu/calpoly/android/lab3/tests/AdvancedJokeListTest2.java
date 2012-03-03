@@ -105,7 +105,7 @@ public class AdvancedJokeListTest2 extends ActivityInstrumentationTestCase2<Adva
 	/********************/
 	/** JokeView Tests **/
 	/********************/
-	/*
+	
 	@SmallTest
 	public void testExpandSecondJoke() {
 		ListView m_vwJokeLayout = null;
@@ -162,7 +162,7 @@ public class AdvancedJokeListTest2 extends ActivityInstrumentationTestCase2<Adva
 		assertTrue("Check Like Checked",m_vwLikeButton.isChecked());
 		assertTrue("Check Dislike Checked",m_vwDislikeButton2.isChecked());
 }
-*/
+
 	/*************************************/
 	/**	Java Friend-Class Helper Method **/
 	/*************************************/

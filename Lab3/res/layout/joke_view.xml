@@ -14,6 +14,7 @@
             android:id="@+id/expandButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:text=" + " />
 
         <TextView
@@ -21,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/enter_joke" />
+
         <TextView
             android:id="@+id/ratingTextView"
             android:layout_width="match_parent"
@@ -32,16 +34,16 @@
         android:id="@+id/ratingRadioGroup"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_horizontal"
-        android:visibility="gone"
-         >
+        android:orientation="horizontal"
+        android:visibility="gone" >
 
         <RadioButton
             android:id="@+id/likeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/like_menuitem"/>
+            android:focusable="false"
+            android:text="@string/like_menuitem" />
 
         <LinearLayout
             android:id="@+id/linearLayout2"
@@ -53,6 +55,7 @@
             android:id="@+id/dislikeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:text="@string/dislike_menuitem" />
     </RadioGroup>
 

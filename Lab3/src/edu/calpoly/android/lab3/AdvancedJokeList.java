@@ -6,12 +6,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.View.OnLongClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -20,6 +28,7 @@ import edu.calpoly.android.lab3.JokeView;
 
 public class AdvancedJokeList extends Activity {
 
+	private static final String TAG = AdvancedJokeList.class.getSimpleName();
 	/**
 	 * Contains the name of the Author for the jokes.
 	 */
@@ -58,6 +67,9 @@ public class AdvancedJokeList extends Activity {
 	 */
 	protected int m_nDarkColor;
 	protected int m_nLightColor;
+	
+    protected MenuItem menuItem;
+    protected MenuItem rateItem;
 
 	/**
 	 * Context-Menu MenuItem ID's IMPORTANT: You must use these when creating
@@ -83,11 +95,21 @@ public class AdvancedJokeList extends Activity {
 		m_arrJokeList = new ArrayList<Joke>();
 		m_jokeAdapter = new JokeListAdapter(this, m_arrJokeList);
 		m_vwJokeLayout.setAdapter(m_jokeAdapter);
+		m_vwJokeLayout.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				m_jokeAdapter.onItemLongClick(arg0, arg1, arg2, arg3);
+				return false;
+			}
+		});
 
 		String[] jokes = getResources().getStringArray(R.array.jokeList);
 		for (int j = 0; j < jokes.length; j++) {
 			addJoke(new Joke(jokes[j], m_strAuthorName));
 		}
+		
+		registerForContextMenu(m_vwJokeLayout);
 	}
 
 	/**
@@ -97,6 +119,7 @@ public class AdvancedJokeList extends Activity {
 	protected void initLayout() {
 		setContentView(R.layout.advanced);
 		m_vwJokeLayout = (ListView) findViewById(R.id.jokeListViewGroup);
+		m_vwJokeLayout.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		m_vwJokeEditText = (EditText) findViewById(R.id.newJokeEditText);
 		m_vwJokeButton = (Button) findViewById(R.id.addJokeButton);
 	}
@@ -107,6 +130,7 @@ public class AdvancedJokeList extends Activity {
 	 * list.
 	 */
 	protected void initAddJokeListeners() {
+		// TODO
 		m_vwJokeButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
@@ -127,27 +151,27 @@ public class AdvancedJokeList extends Activity {
 
 		m_vwJokeEditText.setOnKeyListener(new OnKeyListener() {
 
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    // TODO Auto-generated method stub
-                    if (m_vwJokeEditText == (EditText) v
-                                    && (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)
-                                    && event.getAction() == KeyEvent.ACTION_DOWN
-                                    && !m_vwJokeEditText.getText().toString().equals("")) {
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				// TODO Auto-generated method stub
+				if (m_vwJokeEditText == (EditText) v
+						&& (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)
+						&& event.getAction() == KeyEvent.ACTION_DOWN
+						&& !m_vwJokeEditText.getText().toString().equals("")) {
 
-                            addJoke(new Joke(m_vwJokeEditText.getText().toString(),
-                                            m_strAuthorName));
-                            m_vwJokeEditText.setText("");
+					addJoke(new Joke(m_vwJokeEditText.getText().toString(),
+							m_strAuthorName));
+					m_vwJokeEditText.setText("");
 
-                            // Hide Keyboard
-                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(
-                                            m_vwJokeEditText.getWindowToken(), 0);
+					// Hide Keyboard
+					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(
+							m_vwJokeEditText.getWindowToken(), 0);
 
-                            return true;
-                    }
-                    return false;
-            }
-    });
+					return true;
+				}
+				return false;
+			}
+		});
 	}
 
 	/**
@@ -163,6 +187,25 @@ public class AdvancedJokeList extends Activity {
 			m_jokeAdapter.notifyDataSetChanged();
 		}
 	}
+	
+	@Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+            super.onCreateContextMenu(menu, v, menuInfo);
+            menuItem = menu.add(0, REMOVE_JOKE_MENUITEM, 0, R.string.remove_menuitem);
+            menuItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+                    
+                    public boolean onMenuItemClick(MenuItem item) {
+                            // TODO Auto-generated method stub
+                            if(menuItem == item) {
+                                    m_arrJokeList.remove(m_jokeAdapter.getSelectedPosition());
+                                    m_jokeAdapter.notifyDataSetChanged();
+                                    return true;
+                            }
+                            return false;
+                    }
+            });
+            
+    }
 
 	/**
 	 * Method used to retrieve Jokes from online server. The getJoke script
