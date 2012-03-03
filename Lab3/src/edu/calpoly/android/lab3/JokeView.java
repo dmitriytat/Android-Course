@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
 public class JokeView extends LinearLayout {
@@ -39,11 +40,11 @@ public class JokeView extends LinearLayout {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.joke_view, this, true);
-		
-		m_joke=joke;
-		
+
+		m_joke = joke;
+
 		m_vwExpandButton = (Button) findViewById(R.id.expandButton);
-			m_vwExpandButton.setOnClickListener(new OnClickListener() {
+		m_vwExpandButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				if (m_vwExpandButton.getText() != COLLAPSE) {
@@ -55,11 +56,25 @@ public class JokeView extends LinearLayout {
 				}
 			}
 		});
-			
+
 		m_vwLikeButton = (RadioButton) findViewById(R.id.likeButton);
 		m_vwDislikeButton = (RadioButton) findViewById(R.id.dislikeButton);
 		m_vwLikeGroup = (RadioGroup) findViewById(R.id.ratingRadioGroup);
+
+		final TextView ratingTextView = (TextView)findViewById(R.id.ratingTextView);
 		
+		m_vwLikeGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				if (m_vwLikeButton.isChecked())
+					m_joke.setRating(m_joke.getRating() + 1);
+				else
+					m_joke.setRating(m_joke.getRating() - 1);
+				Integer rat = m_joke.getRating();
+				m_vwExpandButton.setText(rat.toString());
+			}
+		});
+
 		m_vwJokeText = (TextView) findViewById(R.id.jokeTextView);
 		m_vwJokeText.setText(m_joke.getJoke());
 		m_vwJokeText.setEllipsize(TruncateAt.END);
@@ -73,7 +88,7 @@ public class JokeView extends LinearLayout {
 	 *            The Joke object which this View will display.
 	 */
 	public void setJoke(Joke joke) {
-		// TODO
+		m_joke=joke;
 	}
 
 	/**

@@ -8,7 +8,7 @@
         android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal" android:gravity="center_vertical" >
 
         <Button
             android:id="@+id/addJokeButton"
@@ -26,17 +26,10 @@
         </EditText>
     </LinearLayout>
 
-    <ScrollView
-        android:id="@+id/jokeScrollView"
-        android:layout_width="fill_parent"
+    <ListView
+        android:id="@+id/jokeListViewGroup"
+        android:layout_width="match_parent"
         android:layout_height="fill_parent" >
-
-        <LinearLayout
-            android:id="@+id/jokeListViewGroup"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-        </LinearLayout>
-    </ScrollView>
+    </ListView>
 
 </LinearLayout>

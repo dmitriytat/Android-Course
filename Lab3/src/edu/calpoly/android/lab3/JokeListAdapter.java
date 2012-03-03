@@ -1,10 +1,15 @@
 package edu.calpoly.android.lab3;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.BaseAdapter;
 
-public class JokeListAdapter {
+public class JokeListAdapter extends BaseAdapter  {
 
 	/**
 	 * The application Context in which this JokeListAdapter is being used.
@@ -35,7 +40,9 @@ public class JokeListAdapter {
 	 *            is bound.
 	 */
 	public JokeListAdapter(Context context, List<Joke> jokeList) {
-		//TODO
+		m_context=context;
+		m_jokeList=jokeList;
+		m_nSelectedPosition=Adapter.NO_SELECTION;
 	}
 
 	/**
@@ -46,7 +53,22 @@ public class JokeListAdapter {
 	 *         currently selected Joke.
 	 */
 	public int getSelectedPosition() {
-		//TODO
-		return 0;
+		return m_nSelectedPosition;
+	}
+
+	public int getCount() {
+		return m_jokeList.size();
+	}
+
+	public Object getItem(int position) {
+		return m_jokeList.get(position);
+	}
+
+	public long getItemId(int position) {
+		return m_jokeList.indexOf(m_jokeList.get(position));
+	}
+
+	public View getView(int position, View convertView, ViewGroup parent) {
+		return new JokeView(m_context, m_jokeList.get(position));
 	}
 }

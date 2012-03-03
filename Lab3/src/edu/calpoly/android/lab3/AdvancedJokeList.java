@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import edu.calpoly.android.lab3.JokeView;
 
 public class AdvancedJokeList extends Activity {
@@ -37,7 +38,7 @@ public class AdvancedJokeList extends Activity {
 	/**
 	 * ViewGroup used for maintaining a list of Views that each display Jokes.
 	 **/
-	protected LinearLayout m_vwJokeLayout;
+	protected ListView m_vwJokeLayout;
 
 	/**
 	 * EditText used for entering text for a new Joke to be added to
@@ -80,6 +81,8 @@ public class AdvancedJokeList extends Activity {
 		String[] jokeArray = res.getStringArray(R.array.jokeList);
 
 		m_arrJokeList = new ArrayList<Joke>();
+		m_jokeAdapter = new JokeListAdapter(this, m_arrJokeList);
+		m_vwJokeLayout.setAdapter(m_jokeAdapter);
 
 		String[] jokes = getResources().getStringArray(R.array.jokeList);
 		for (int j = 0; j < jokes.length; j++) {
@@ -93,7 +96,7 @@ public class AdvancedJokeList extends Activity {
 	 */
 	protected void initLayout() {
 		setContentView(R.layout.advanced);
-		m_vwJokeLayout = (LinearLayout) findViewById(R.id.jokeListViewGroup);
+		m_vwJokeLayout = (ListView) findViewById(R.id.jokeListViewGroup);
 		m_vwJokeEditText = (EditText) findViewById(R.id.newJokeEditText);
 		m_vwJokeButton = (Button) findViewById(R.id.addJokeButton);
 	}
@@ -157,11 +160,7 @@ public class AdvancedJokeList extends Activity {
 	protected void addJoke(Joke joke) {
 		if (joke != null) {
 			m_arrJokeList.add(joke);
-
-			JokeView jokeView = new JokeView(this, joke);
-			jokeView.setBackgroundColor(m_arrJokeList.size() % 2 == 1 ? 0xFF1F1F1F
-					: 0xFF3D3D3D);
-			m_vwJokeLayout.addView(jokeView);
+			m_jokeAdapter.notifyDataSetChanged();
 		}
 	}
 

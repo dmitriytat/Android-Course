@@ -23,15 +23,15 @@ public final class R {
     public static final class id {
         public static final int addJokeButton=0x7f080001;
         public static final int dislikeButton=0x7f08000a;
-        public static final int expandButton=0x7f080005;
-        public static final int jokeListViewGroup=0x7f080004;
-        public static final int jokeScrollView=0x7f080003;
-        public static final int jokeTextView=0x7f080006;
+        public static final int expandButton=0x7f080004;
+        public static final int jokeListViewGroup=0x7f080003;
+        public static final int jokeTextView=0x7f080005;
         public static final int likeButton=0x7f080008;
         public static final int linearLayout1=0x7f080000;
         public static final int linearLayout2=0x7f080009;
         public static final int newJokeEditText=0x7f080002;
         public static final int ratingRadioGroup=0x7f080007;
+        public static final int ratingTextView=0x7f080006;
     }
     public static final class layout {
         public static final int advanced=0x7f030000;
