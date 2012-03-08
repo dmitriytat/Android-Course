@@ -1,34 +1,31 @@
 package edu.calpoly.android.lab3;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.view.View.OnLongClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import edu.calpoly.android.lab3.JokeView;
+import android.widget.Toast;
 
 public class AdvancedJokeList extends Activity {
-
-	private static final String TAG = AdvancedJokeList.class.getSimpleName();
 	/**
 	 * Contains the name of the Author for the jokes.
 	 */
@@ -38,6 +35,7 @@ public class AdvancedJokeList extends Activity {
 	 * Contains the list of Jokes the Activity will present to the user.
 	 **/
 	protected ArrayList<Joke> m_arrJokeList;
+	protected ArrayList<Joke> m_arrJokeCopy;
 
 	/**
 	 * Adapter used to bind an AdapterView to List of Jokes.
@@ -67,9 +65,9 @@ public class AdvancedJokeList extends Activity {
 	 */
 	protected int m_nDarkColor;
 	protected int m_nLightColor;
-	
-    protected MenuItem menuItem;
-    protected MenuItem rateItem;
+
+	protected MenuItem menuItem;
+	protected MenuItem rateItem;
 
 	/**
 	 * Context-Menu MenuItem ID's IMPORTANT: You must use these when creating
@@ -90,25 +88,26 @@ public class AdvancedJokeList extends Activity {
 		m_nDarkColor = res.getColor(R.color.dark);
 		m_nLightColor = res.getColor(R.color.light);
 		m_strAuthorName = res.getString(R.string.author_name);
-		String[] jokeArray = res.getStringArray(R.array.jokeList);
 
 		m_arrJokeList = new ArrayList<Joke>();
-		m_jokeAdapter = new JokeListAdapter(this, m_arrJokeList);
+		m_arrJokeCopy = new ArrayList<Joke>();
+		m_jokeAdapter = new JokeListAdapter(this, m_arrJokeCopy);
 		m_vwJokeLayout.setAdapter(m_jokeAdapter);
-		m_vwJokeLayout.setOnItemLongClickListener(new OnItemLongClickListener() {
+		m_vwJokeLayout
+				.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				m_jokeAdapter.onItemLongClick(arg0, arg1, arg2, arg3);
-				return false;
-			}
-		});
+					public boolean onItemLongClick(AdapterView<?> arg0,
+							View arg1, int arg2, long arg3) {
+						m_jokeAdapter.onItemLongClick(arg0, arg1, arg2, arg3);
+						return false;
+					}
+				});
 
 		String[] jokes = getResources().getStringArray(R.array.jokeList);
 		for (int j = 0; j < jokes.length; j++) {
 			addJoke(new Joke(jokes[j], m_strAuthorName));
 		}
-		
+
 		registerForContextMenu(m_vwJokeLayout);
 	}
 
@@ -184,28 +183,93 @@ public class AdvancedJokeList extends Activity {
 	protected void addJoke(Joke joke) {
 		if (joke != null) {
 			m_arrJokeList.add(joke);
+			m_arrJokeCopy.add(joke);
 			m_jokeAdapter.notifyDataSetChanged();
 		}
 	}
-	
+
 	@Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-            super.onCreateContextMenu(menu, v, menuInfo);
-            menuItem = menu.add(0, REMOVE_JOKE_MENUITEM, 0, R.string.remove_menuitem);
-            menuItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-                    
-                    public boolean onMenuItemClick(MenuItem item) {
-                            // TODO Auto-generated method stub
-                            if(menuItem == item) {
-                                    m_arrJokeList.remove(m_jokeAdapter.getSelectedPosition());
-                                    m_jokeAdapter.notifyDataSetChanged();
-                                    return true;
-                            }
-                            return false;
-                    }
-            });
-            
-    }
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		menuItem = menu.add(0, REMOVE_JOKE_MENUITEM, 0,
+				R.string.remove_menuitem);
+		menuItem = menu.add(0, UPLOAD_JOKE_MENUITEM, 0,
+				R.string.upload_menuitem);
+
+		menuItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+			public boolean onMenuItemClick(MenuItem item) {
+				// Toast toast = Toast.makeText(getApplicationContext(),
+				// "Lol",Toast.LENGTH_SHORT);
+				// toast.show();
+
+				// if (item.getItemId() == REMOVE_JOKE_MENUITEM) {
+
+				// m_arrJokeCopy.remove(m_jokeAdapter.getSelectedPosition());
+				// m_jokeAdapter.notifyDataSetChanged();
+
+				// return true;
+				// }
+				// if (item.getItemId() == UPLOAD_JOKE_MENUITEM) {
+
+				// }
+				uploadJokeToServer(m_arrJokeCopy.get(m_jokeAdapter
+						.getSelectedPosition()));
+				return false;
+			}
+		});
+
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu, menu);
+		return true;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.like_menuitem:
+			m_arrJokeCopy.clear();
+			for (int i = 0; i < m_arrJokeList.size(); i++) {
+				if (m_arrJokeList.get(i).getRating() == Joke.LIKE) {
+					m_arrJokeCopy.add(m_arrJokeList.get(i));
+				}
+			}
+			m_jokeAdapter.notifyDataSetChanged();
+			return true;
+		case R.id.dislike_menuitem:
+			m_arrJokeCopy.clear();
+			for (int i = 0; i < m_arrJokeList.size(); i++) {
+				if (m_arrJokeList.get(i).getRating() == Joke.DISLIKE) {
+					m_arrJokeCopy.add(m_arrJokeList.get(i));
+				}
+			}
+			m_jokeAdapter.notifyDataSetChanged();
+			return true;
+		case R.id.unrated_menuitem:
+			m_arrJokeCopy.clear();
+			for (int i = 0; i < m_arrJokeList.size(); i++) {
+				if (m_arrJokeList.get(i).getRating() == Joke.UNRATED) {
+					m_arrJokeCopy.add(m_arrJokeList.get(i));
+				}
+			}
+			m_jokeAdapter.notifyDataSetChanged();
+			return true;
+		case R.id.show_all_menuitem:
+			m_arrJokeCopy.clear();
+			for (int i = 0; i < m_arrJokeList.size(); i++) {
+				m_arrJokeCopy.add(m_arrJokeList.get(i));
+			}
+			m_jokeAdapter.notifyDataSetChanged();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 
 	/**
 	 * Method used to retrieve Jokes from online server. The getJoke script
@@ -217,9 +281,16 @@ public class AdvancedJokeList extends Activity {
 	 * 
 	 * URL: http://simexusa.com/aac/getJokes.php?
 	 * 
+	 * @throws MalformedURLException
+	 * 
 	 */
-	protected void getJokesFromServer() {
+	protected void getJokesFromServer() throws MalformedURLException {
 		// TODO
+
+		java.net.URL URL = new java.net.URL(
+				"http://simexusa.com/aac/getAllJokes.php");
+		
+
 	}
 
 	/**
@@ -238,10 +309,22 @@ public class AdvancedJokeList extends Activity {
 	 * 
 	 * @param joke
 	 *            The Joke to be uploaded to the server.
+	 * @throws MalformedURLException
 	 * 
 	 */
-	protected void uploadJokeToServer(Joke joke) {
-		// TODO
+	protected void uploadJokeToServer(Joke joke) throws MalformedURLException {
+
+		String mURL = "http://simexusa.com/aac/addOneJoke.php?";
+		mURL += "joke=";
+		mURL += java.net.URLEncoder.encode(joke.getJoke());
+		mURL += "&author";
+		mURL += java.net.URLEncoder.encode(joke.getAuthor());
+
+		java.net.URL URL = new java.net.URL(mURL);
+		URL.openStream();
+		Toast toast = Toast.makeText(getApplicationContext(), "Uploaded",
+				Toast.LENGTH_SHORT);
+		toast.show();
 	}
 
 }

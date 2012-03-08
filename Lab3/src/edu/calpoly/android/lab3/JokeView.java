@@ -4,11 +4,9 @@ import android.content.Context;
 import android.text.TextUtils.TruncateAt;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Checkable;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -49,12 +47,12 @@ public class JokeView extends LinearLayout implements Checkable {
 		m_vwExpandButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-                if (m_vwExpandButton == (Button) v) {
-                        if (m_vwExpandButton.getText().equals(EXPAND))
-                                expandJokeView();
-                        else
-                                collapseJokeView();
-                }
+
+				if (m_vwExpandButton.getText() == EXPAND)
+					expandJokeView();
+				else
+					collapseJokeView();
+
 			}
 		});
 		m_vwLikeButton = (RadioButton) findViewById(R.id.likeButton);
@@ -62,23 +60,31 @@ public class JokeView extends LinearLayout implements Checkable {
 
 		m_vwLikeGroup = (RadioGroup) findViewById(R.id.ratingRadioGroup);
 
-		final TextView ratingTextView = (TextView) findViewById(R.id.ratingTextView);
-
 		m_vwLikeGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				if (m_vwLikeButton.isChecked())
+				if (group == m_vwLikeGroup && m_vwLikeButton.isChecked()
+						&& !m_vwDislikeButton.isChecked())
 					m_joke.setRating(Joke.LIKE);
 				else
 					m_joke.setRating(Joke.DISLIKE);
-				Integer rat = m_joke.getRating();
-				m_vwExpandButton.setText(rat.toString());
 			}
 		});
 
 		m_vwJokeText = (TextView) findViewById(R.id.jokeTextView);
 		m_vwJokeText.setText(m_joke.getJoke());
 		m_vwJokeText.setEllipsize(TruncateAt.END);
+		
+		switch (m_joke.getRating()) {
+		case (Joke.UNRATED):
+			m_vwLikeGroup.clearCheck();
+		case (Joke.DISLIKE):
+			m_vwLikeGroup.check(R.id.dislikeButton);
+			break;
+		case (Joke.LIKE):
+			m_vwLikeGroup.check(R.id.likeButton);
+			break;
+		}
 	}
 
 	/**
@@ -90,18 +96,6 @@ public class JokeView extends LinearLayout implements Checkable {
 	 */
 	public void setJoke(Joke joke) {
 		m_joke = joke;
-		
-		switch (joke.getRating()) {
-        case (Joke.UNRATED):
-                m_vwLikeGroup.clearCheck();
-                break;
-        case (Joke.DISLIKE):
-                m_vwLikeGroup.check(R.id.dislikeButton);
-                break;
-        case (Joke.LIKE):
-                m_vwLikeGroup.check(R.id.likeButton);
-                break;
-        }
 	}
 
 	/**
@@ -136,8 +130,8 @@ public class JokeView extends LinearLayout implements Checkable {
 		isChecked = checked;
 		if (!checked)
 			collapseJokeView();
-		else 
-			expandJokeView();	
+		else
+			expandJokeView();
 	}
 
 	public void toggle() {

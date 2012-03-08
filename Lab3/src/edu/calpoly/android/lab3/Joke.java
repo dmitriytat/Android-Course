@@ -21,7 +21,7 @@ public class Joke {
 	 * Contains the rating of this joke, should only be one of the constant
 	 * rating values declared above.
 	 **/
-	private int m_nRating;
+	private int m_nRating = UNRATED;
 
 	/** Contains the name of the Author of this joke. **/
 	private String m_strAuthorName = "";
@@ -31,7 +31,6 @@ public class Joke {
 	 * of UNRATED.
 	 */
 	public Joke() {
-		m_nRating = UNRATED;
 	}
 
 	/**
@@ -47,7 +46,6 @@ public class Joke {
 	public Joke(String strJoke, String strAuthor) {
 		m_strJoke = strJoke;
 		m_strAuthorName = strAuthor;
-		m_nRating = UNRATED;
 	}
 
 	/**
